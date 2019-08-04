@@ -1,0 +1,21 @@
+{
+  "name": "ming_click",
+  "version": "1.0.0",
+  "description": "测试前端工具",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"start": "cd src && node index.js ../static"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minglie/ming_click.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/minglie/ming_click/issues"
+  },
+  "homepage": "https://github.com/minglie/ming_click#readme"
+}

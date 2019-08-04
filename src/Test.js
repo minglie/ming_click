@@ -1,0 +1,1 @@
+var C = require('./index.js');C.watch("../static")
