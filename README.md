@@ -1,5 +1,5 @@
-# ming_cnode_demo
- 测试前端工具
+# ming_click
+ 测试前端自动刷新工具
 
 
 ```javascript
