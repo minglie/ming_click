@@ -1,5 +1,5 @@
 # ming_click
- 测试前端自动刷新工具
+ 前端页面自动刷新工具
 
 
 ```javascript
