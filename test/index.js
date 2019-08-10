@@ -1,0 +1,1 @@
+var C = require('../src/ming_click.js');C.watch("./static")

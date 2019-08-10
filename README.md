@@ -4,7 +4,7 @@
 
 ```javascript
 
-var C = require('./index.js');
+var C = require('ming_click');
 C.watch("./static")
 
 ```
