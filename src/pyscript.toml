@@ -1,0 +1,8 @@
+name = "Antigravity"
+description = "A simple application to display an image and animate it based on the famous XKCD comic."
+
+[files]
+"./main.py" = ""
+"./my_and.py" = ""
+"./utils.py" = ""
+
