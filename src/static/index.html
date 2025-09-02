@@ -68,8 +68,6 @@
         position: relative;
         overflow: hidden;
       }
-
-      /* 轻微的装饰性渐变光 */
       .stage::after {
         content: "";
         position: absolute;
@@ -83,15 +81,11 @@
         transform: translateY(0);
         pointer-events: none;
       }
-
-      /* SVG 尺寸 */
       svg {
         width: 220px;
         height: 220px;
         display: block;
       }
-
-      /* 关灯默认样式 */
       .bulb .glass {
         fill: #3d3f52;
         transition: all 0.35s ease;
@@ -122,8 +116,6 @@
         );
         pointer-events: none;
       }
-
-      /* 开灯效果：玻璃变暖色 + 菲涅尔高光 + 外发光 */
       .on .glass {
         fill: #ffe07a;
         filter: drop-shadow(0 0 20px rgba(255, 210, 90, 0.55))
@@ -134,6 +126,40 @@
       }
       .on + .glow {
         opacity: 1;
+      }
+
+      /* ====== 逻辑运算选择区（仅替换为radio） ====== */
+      .logic-checkboxes {
+        margin: 16px 0;
+        padding: 12px;
+        border-radius: 12px;
+        background: color-mix(in oklab, var(--card), black 5%);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .logic-checkboxes h3 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        color: var(--muted);
+        font-weight: 500;
+      }
+      .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .checkbox-item input[type="radio"] {
+        accent-color: var(--brand);
+        width: 14px;
+        height: 14px;
+        cursor: pointer;
       }
 
       /* ====== 控制按钮 ====== */
@@ -212,6 +238,9 @@
           width: 180px;
           height: 180px;
         }
+        .checkbox-group {
+          gap: 8px;
+        }
       }
 
       button.active {
@@ -231,7 +260,6 @@
 
       <!-- ====== 灯泡舞台 ====== -->
       <div class="stage" aria-live="polite">
-        <!-- 灯泡（SVG） -->
         <svg
           id="lamp"
           role="img"
@@ -241,9 +269,7 @@
         >
           <title>灯泡</title>
           <g class="bulb" id="bulb">
-            <!-- 玻璃灯罩 -->
             <ellipse class="glass" cx="128" cy="104" rx="68" ry="80" />
-            <!-- 灯丝 -->
             <g
               fill="none"
               stroke-width="6"
@@ -253,9 +279,7 @@
               <path d="M92 100 C 110 92, 146 92, 164 100" />
               <path d="M104 110 C 120 106, 136 106, 152 110" />
             </g>
-            <!-- 颈部/散热片 -->
             <rect class="cap" x="98" y="158" width="60" height="20" rx="6" />
-            <!-- 螺口 -->
             <g class="screw">
               <rect x="96" y="178" width="64" height="14" rx="4" />
               <rect x="96" y="192" width="64" height="14" rx="4" />
@@ -263,8 +287,32 @@
             </g>
           </g>
         </svg>
-        <!-- 外部发光层（跟随 .on 状态） -->
         <div class="glow" id="glow"></div>
+      </div>
+
+      <!-- ====== 逻辑运算选择区（仅将checkbox改为radio，无其他新增） ====== -->
+      <div class="logic-checkboxes">
+        <h3>选择逻辑运算：</h3>
+        <div class="checkbox-group">
+          <label class="checkbox-item">
+            <input type="radio" name="logic" value="and" /> 与
+          </label>
+          <label class="checkbox-item">
+            <input type="radio" name="logic" value="or" /> 或
+          </label>
+          <label class="checkbox-item">
+            <input type="radio" name="logic" value="not" /> 非
+          </label>
+          <label class="checkbox-item">
+            <input type="radio" name="logic" value="nand" /> 与非
+          </label>
+          <label class="checkbox-item">
+            <input type="radio" name="logic" value="xor" /> 异或
+          </label>
+          <label class="checkbox-item">
+            <input type="radio" name="logic" value="xnor" /> 同或
+          </label>
+        </div>
       </div>
 
       <!-- ====== 控制按钮 ====== -->
@@ -273,7 +321,6 @@
         <button id="btnB" type="button" aria-pressed="false">按键 B</button>
       </div>
 
-      <!-- 新增开始按钮 -->
       <div class="row" style="margin-top: 16px; justify-content: center">
         <button id="btnStart" type="button" class="primary">加载中...</button>
       </div>
@@ -285,7 +332,7 @@
     </div>
 
     <script>
-      // ====== 逻辑部分（零依赖） ======
+      // ====== 原有逻辑保留，仅适配radio选中获取 ======
       const bulb = document.getElementById("bulb");
       const lamp = document.getElementById("lamp");
       const glow = document.getElementById("glow");
@@ -293,43 +340,52 @@
       const btnB = document.getElementById("btnB");
       const stateText = document.getElementById("stateText");
       const stateDot = document.getElementById("stateDot");
+      const btnStart = document.getElementById("btnStart");
+      const logicRadios = document.querySelectorAll('input[name="logic"]');
 
-      // 按键状态跟踪
       let keyA = false;
       let keyB = false;
+      let selectedLogic = null; // 适配radio：存储单个选中值
 
-      // 设置灯状态
+      // 适配radio：获取选中的逻辑运算（单个值）
+      function getSelectedLogic() {
+        const checkedRadio = document.querySelector(
+          'input[name="logic"]:checked'
+        );
+        return checkedRadio ? checkedRadio.value : null;
+      }
+
+      function onLogicChange() {
+        checkKeys(); // 重新计算灯泡状态（利用当前A/B按键状态和新选中的逻辑）
+      }
+
       function setBulb(on) {
         bulb.classList.toggle("on", on);
-        // 让 glow 跟在 SVG 中心
         const rect = lamp.getBoundingClientRect();
         const stageRect = lamp.parentElement.getBoundingClientRect();
         glow.style.left = `${stageRect.width / 2 - 190}px`;
         glow.style.top = `${stageRect.height / 2 - 190}px`;
-
-        // 无障碍与文案
         lamp.setAttribute("aria-label", `灯泡已${on ? "开启" : "关闭"}`);
         stateText.textContent = `当前状态：${on ? "开" : "关"}`;
         stateDot.classList.toggle("on", on);
       }
 
-      // 检查按键状态并更新灯泡
       async function checkKeys() {
         try {
-          const bothPressed = await PyMain(keyA, keyB);
+          selectedLogic = getSelectedLogic(); // 调用适配radio的获取方法
+          const bothPressed = await PyMain(selectedLogic, keyA, keyB);
           setBulb(bothPressed);
-          // 更新按钮状态
           btnA.setAttribute("aria-pressed", keyA ? "true" : "false");
           btnB.setAttribute("aria-pressed", keyB ? "true" : "false");
-          // 更新按钮高亮
           btnA.classList.toggle("active", keyA);
           btnB.classList.toggle("active", keyB);
         } catch (e) {
           console.error(e);
         }
       }
-
-      // 键盘事件处理
+      document.querySelectorAll('input[name="logic"]').forEach((radio) => {
+        radio.addEventListener("change", onLogicChange);
+      });
       document.addEventListener("keydown", (e) => {
         if (e.code === "KeyA") {
           e.preventDefault();
@@ -354,7 +410,6 @@
         }
       });
 
-      // 按钮点击事件（模拟按键）
       btnA.addEventListener("mousedown", () => {
         keyA = true;
         checkKeys();
@@ -386,10 +441,7 @@
         window.PyStart();
       });
 
-      // 初始为"关"
       setBulb(false);
-
-      // 窗口缩放时更新 glow 位置
       window.addEventListener(
         "resize",
         () => {

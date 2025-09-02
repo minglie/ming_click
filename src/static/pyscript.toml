@@ -3,6 +3,5 @@ description = "A simple application to display an image and animate it based on 
 
 [files]
 "./main.py" = ""
-"./my_and.py" = ""
 "./utils.py" = ""
 
